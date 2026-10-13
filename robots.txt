@@ -2,4 +2,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://5105labs.netlify.app/sitemap.xml
+Sitemap: https://5105labs.com/sitemap.xml
