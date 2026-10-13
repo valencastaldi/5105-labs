@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "dark-glow",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-09-22T19:02:42.757Z",
+        "reason": "intro preloader: the user asked to replicate qrsolutions.com.ar's loader, whose defining trait is the glowing logo and progress tip"
+      }
+    ]
+  }
+}

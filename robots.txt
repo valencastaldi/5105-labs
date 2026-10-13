@@ -1,0 +1,5 @@
+# 5105 Labs
+User-agent: *
+Allow: /
+
+Sitemap: https://5105labs.netlify.app/sitemap.xml

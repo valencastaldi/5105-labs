@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Verificacion de Google Search Console. No borrar: si se cae, la propiedad
+     se desverifica y se pierde el acceso a los datos de busqueda. -->
+<meta name="google-site-verification" content="Y6zDhl5BUNbiYHx-HFZvdN3D4_jRqYBeXq2NQmUaJCI">
+<title>5105 Labs | Sistemas, automatizaciones y páginas web en Villa Allende</title>
+<meta name="description" content="5105 Labs. Desarrollamos sistemas de stock, automatizaciones y páginas web para comercios y profesionales de Villa Allende, Córdoba. Presupuesto sin cargo.">
+<!-- URL oficial de la pagina. Le dice a Google cual es la direccion buena
+     cuando llega por varias (con y sin barra final, con parametros, etc).
+     Al pasar a dominio propio se cambia aca, en og:url, en og:image, en el
+     JSON-LD, en robots.txt y en sitemap.xml. En ningun lado mas. -->
+<link rel="canonical" href="https://5105labs.netlify.app/">
+
+<!-- Iconos. El de la pestana lleva [5] y no [5105]: a 32px los seis caracteres
+     del monograma completo quedan en una mancha ilegible. Los corchetes naranja
+     son la parte que identifica a la marca, y esos si se leen hasta en 16px. -->
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/favicon-512.png" sizes="512x512" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+<meta name="theme-color" content="#ad5714" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1113" media="(prefers-color-scheme: dark)">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://5105labs.netlify.app/">
+<meta property="og:site_name" content="5105 Labs">
+<meta property="og:title" content="5105 Labs | Software para negocios de Villa Allende">
+<meta property="og:description" content="Sistemas de stock, automatizaciones y páginas web. 5105 es el código postal de Villa Allende: somos de acá. Presupuesto sin cargo.">
+<meta property="og:locale" content="es_AR">
+<meta property="og:image" content="https://5105labs.netlify.app/og.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+
+<!-- Habilita las animaciones de entrada antes de pintar, para que no se vea el
+     salto. Si main.js no llega a marcar la bandera en 2 segundos, la clase se
+     saca sola y la pagina se lee entera: sin esto, un main.js que no carga deja
+     todas las secciones en opacity:0 para siempre. -->
+<script>
+document.documentElement.classList.add("js");
+setTimeout(function () {
+  if (!window.__cyrListo) document.documentElement.classList.remove("js", "intro");
+}, 2000);
+
+/* Intro: solo la primera vez por sesion y nunca con movimiento reducido.
+   Se decide aca, antes de pintar, para que la pagina no aparezca un instante
+   y despues la tape el overlay. */
+(function () {
+  // ?intro en la URL la fuerza siempre, para probarla.
+  if (/[?&]intro\b/.test(location.search)) {
+    document.documentElement.classList.add("intro", "intro-forzada");
+    return;
+  }
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  // Si el storage esta bloqueado (modo privado, iframes) la intro sale igual.
+  try { if (sessionStorage.getItem("intro5105")) return; } catch (e) {}
+  document.documentElement.classList.add("intro");
+})();
+</script>
+
+<!-- Nombre del sitio para Google. Sin esto, en los resultados aparece "Netlify"
+     arriba del link en vez de "5105 Labs". -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "5105 Labs",
+  "alternateName": ["5105Labs", "5105"],
+  "url": "https://5105labs.netlify.app/"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "5105 Labs",
+  "description": "Desarrollo de sistemas de gestión, automatizaciones y páginas web para comercios y profesionales.",
+  "alternateName": "5105",
+  "url": "https://5105labs.netlify.app/",
+  "logo": "https://5105labs.netlify.app/og.jpg",
+  "email": "5105labs@gmail.com",
+  "telephone": "+5493512700909",
+  "areaServed": { "@type": "City", "name": "Villa Allende, Córdoba, Argentina" },
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Villa Allende",
+    "postalCode": "X5105",
+    "addressRegion": "Córdoba",
+    "addressCountry": "AR"
+  },
+  "founder": [
+    { "@type": "Person", "name": "Valentino Castaldi" },
+    { "@type": "Person", "name": "Agustín Rosas" }
+  ]
+}
+</script>
+</head>
+<body>
+
+<!-- Intro de carga. El monograma se dibuja en contorno, lo cruza un brillo
+     naranja y al terminar de cargar se rellena con los colores de la marca.
+     Solo existe mientras <html> tiene la clase "intro" (ver el <head>). -->
+<div class="intro-ol" aria-hidden="true">
+  <div class="intro-ol__box">
+    <svg class="intro-ol__logo" viewBox="0 0 300 80">
+      <defs>
+        <linearGradient id="intro-banda" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+          <stop offset=".5" stop-color="#fff"/>
+          <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+        </linearGradient>
+        <mask id="intro-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="300" height="80">
+          <rect class="intro-ol__banda" x="-60" y="-80" width="70" height="240" fill="url(#intro-banda)"/>
+        </mask>
+      </defs>
+      <!-- 1: contorno tenue que se dibuja -->
+      <text class="intro-ol__trazo" x="150" y="57" text-anchor="middle" textLength="276" lengthAdjust="spacingAndGlyphs"><tspan class="b">[</tspan>5105<tspan class="b">]</tspan></text>
+      <!-- 2: el mismo contorno en naranja, visible solo donde pasa la banda -->
+      <text class="intro-ol__brillo" x="150" y="57" text-anchor="middle" textLength="276" lengthAdjust="spacingAndGlyphs" mask="url(#intro-mask)">[5105]</text>
+      <!-- 3: relleno final con los colores del logo -->
+      <text class="intro-ol__relleno" x="150" y="57" text-anchor="middle" textLength="276" lengthAdjust="spacingAndGlyphs"><tspan class="b">[</tspan>5105<tspan class="b">]</tspan></text>
+    </svg>
+    <div class="intro-ol__barra"><span></span></div>
+  </div>
+</div>
+
+<!-- Los 9 iconos de la pagina, vendorizados de @phosphor-icons/core 2.1.1
+     (MIT). Son 4,8 KB en el HTML contra los 444 KB que costaba traer las dos
+     familias completas por CDN, y sacan a un tercero de la ruta critica: antes,
+     si el CDN tardaba, la pagina no pintaba nada.
+     Para agregar un icono nuevo: buscalo en phosphoricons.com, copiá el <path>
+     y sumá un <symbol> con el mismo viewBox. -->
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+  <symbol id="i-whatsapp" viewBox="0 0 256 256"><path d="M152.58,145.23l23,11.48A24,24,0,0,1,152,176a72.08,72.08,0,0,1-72-72A24,24,0,0,1,99.29,80.46l11.48,23L101,118a8,8,0,0,0-.73,7.51,56.47,56.47,0,0,0,30.15,30.15A8,8,0,0,0,138,155ZM232,128A104,104,0,0,1,79.12,219.82L45.07,231.17a16,16,0,0,1-20.24-20.24l11.35-34.05A104,104,0,1,1,232,128Zm-40,24a8,8,0,0,0-4.42-7.16l-32-16a8,8,0,0,0-8,.5l-14.69,9.8a40.55,40.55,0,0,1-16-16l9.8-14.69a8,8,0,0,0,.5-8l-16-32A8,8,0,0,0,104,64a40,40,0,0,0-40,40,88.1,88.1,0,0,0,88,88A40,40,0,0,0,192,152Z"/></symbol>
+  <symbol id="i-package" viewBox="0 0 256 256"><path d="M223.68,66.15,135.68,18a15.88,15.88,0,0,0-15.36,0l-88,48.17a16,16,0,0,0-8.32,14v95.64a16,16,0,0,0,8.32,14l88,48.17a15.88,15.88,0,0,0,15.36,0l88-48.17a16,16,0,0,0,8.32-14V80.18A16,16,0,0,0,223.68,66.15ZM128,32l80.34,44-29.77,16.3-80.35-44ZM128,120,47.66,76l33.9-18.56,80.34,44ZM40,90l80,43.78v85.79L40,175.82Zm176,85.78h0l-80,43.79V133.82l32-17.51V152a8,8,0,0,0,16,0V107.55L216,90v85.77Z"/></symbol>
+  <symbol id="i-lightning" viewBox="0 0 256 256"><path d="M215.79,118.17a8,8,0,0,0-5-5.66L153.18,90.9l14.66-73.33a8,8,0,0,0-13.69-7l-112,120a8,8,0,0,0,3,13l57.63,21.61L88.16,238.43a8,8,0,0,0,13.69,7l112-120A8,8,0,0,0,215.79,118.17ZM109.37,214l10.47-52.38a8,8,0,0,0-5-9.06L62,132.71l84.62-90.66L136.16,94.43a8,8,0,0,0,5,9.06l52.8,19.8Z"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm88,104a87.62,87.62,0,0,1-6.4,32.94l-44.7-27.49a15.92,15.92,0,0,0-6.24-2.23l-22.82-3.08a16.11,16.11,0,0,0-16,7.86h-8.72l-3.8-7.86a15.91,15.91,0,0,0-11-8.67l-8-1.73L96.14,104h16.71a16.06,16.06,0,0,0,7.73-2l12.25-6.76a16.62,16.62,0,0,0,3-2.14l26.91-24.34A15.93,15.93,0,0,0,166,49.1l-.36-.65A88.11,88.11,0,0,1,216,128ZM143.31,41.34,152,56.9,125.09,81.24,112.85,88H96.14a16,16,0,0,0-13.88,8l-8.73,15.23L63.38,84.19,74.32,58.32a87.87,87.87,0,0,1,69-17ZM40,128a87.53,87.53,0,0,1,8.54-37.8l11.34,30.27a16,16,0,0,0,11.62,10l21.43,4.61L96.74,143a16.09,16.09,0,0,0,14.4,9h1.48l-7.23,16.23a16,16,0,0,0,2.86,17.37l.14.14L128,205.94l-1.94,10A88.11,88.11,0,0,1,40,128Zm102.58,86.78,1.13-5.81a16.09,16.09,0,0,0-4-13.9,1.85,1.85,0,0,1-.14-.14L120,174.74,133.7,144l22.82,3.08,45.72,28.12A88.18,88.18,0,0,1,142.58,214.78Z"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 256 256"><path d="M208,56H180.28L166.65,35.56A8,8,0,0,0,160,32H96a8,8,0,0,0-6.65,3.56L75.71,56H48A24,24,0,0,0,24,80V192a24,24,0,0,0,24,24H208a24,24,0,0,0,24-24V80A24,24,0,0,0,208,56Zm8,136a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V80a8,8,0,0,1,8-8H80a8,8,0,0,0,6.66-3.56L100.28,48h55.43l13.63,20.44A8,8,0,0,0,176,72h32a8,8,0,0,1,8,8ZM128,88a44,44,0,1,0,44,44A44.05,44.05,0,0,0,128,88Zm0,72a28,28,0,1,1,28-28A28,28,0,0,1,128,160Z"/></symbol>
+  <symbol id="i-map-pin" viewBox="0 0 256 256"><path d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Zm0,206c-16.53-13-72-60.75-72-118a72,72,0,0,1,144,0C200,161.23,144.53,209,128,222Z"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 256 256"><path d="M128,24A104,104,0,0,0,36.18,176.88L24.83,210.93a16,16,0,0,0,20.24,20.24l34.05-11.35A104,104,0,1,0,128,24Zm0,192a87.87,87.87,0,0,1-44.06-11.81,8,8,0,0,0-6.54-.67L40,216,52.47,178.6a8,8,0,0,0-.66-6.54A88,88,0,1,1,128,216Z"/></symbol>
+  <symbol id="i-handshake" viewBox="0 0 256 256"><path d="M254.3,107.91,228.78,56.85a16,16,0,0,0-21.47-7.15L182.44,62.13,130.05,48.27a8.14,8.14,0,0,0-4.1,0L73.56,62.13,48.69,49.7a16,16,0,0,0-21.47,7.15L1.7,107.9a16,16,0,0,0,7.15,21.47l27,13.51,55.49,39.63a8.06,8.06,0,0,0,2.71,1.25l64,16a8,8,0,0,0,7.6-2.1l55.07-55.08,26.42-13.21a16,16,0,0,0,7.15-21.46Zm-54.89,33.37L165,113.72a8,8,0,0,0-10.68.61C136.51,132.27,116.66,130,104,122L147.24,80h31.81l27.21,54.41ZM41.53,64,62,74.22,36.43,125.27,16,115.06Zm116,119.13L99.42,168.61l-49.2-35.14,28-56L128,64.28l9.8,2.59-45,43.68-.08.09a16,16,0,0,0,2.72,24.81c20.56,13.13,45.37,11,64.91-5L188,152.66Zm62-57.87-25.52-51L214.47,64,240,115.06Zm-87.75,92.67a8,8,0,0,1-7.75,6.06,8.13,8.13,0,0,1-1.95-.24L80.41,213.33a7.89,7.89,0,0,1-2.71-1.25L51.35,193.26a8,8,0,0,1,9.3-13l25.11,17.94L126,208.24A8,8,0,0,1,131.82,217.94Z"/></symbol>
+  <symbol id="i-envelope" viewBox="0 0 256 256"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"/></symbol>
+</svg>
+
+<a class="skip" href="#contenido">Ir al contenido</a>
+
+<header class="nav">
+  <div class="wrap nav__inner">
+    <a class="logo" href="#" aria-label="5105 Labs, inicio">
+      <span class="logo__mark" aria-hidden="true"><b>[</b>5105<b>]</b></span>
+      <span class="logo__text">
+        <span class="logo__num">5105</span><span class="logo__labs">Labs</span>
+      </span>
+    </a>
+    <nav class="nav__links" aria-label="Secciones">
+      <a href="#servicios">Servicios</a>
+      <a href="#proceso">Cómo trabajamos</a>
+      <a href="#nosotros">Nosotros</a>
+    </nav>
+    <a class="btn btn--sm" href="https://wa.me/5493512700909?text=Hola!%20Los%20contacto%20por%20la%20p%C3%A1gina." target="_blank" rel="noopener">
+      <svg class="ic" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp
+    </a>
+  </div>
+</header>
+
+<main id="contenido">
+
+  <!-- ============ HERO : split asimétrico ============ -->
+  <section class="hero">
+    <div class="wrap hero__grid">
+      <div class="hero__copy reveal">
+        <h1>Software para los negocios de Villa Allende</h1>
+        <p class="lede">
+          Somos Valentino y Agustín. Hacemos sistemas de stock, automatizaciones
+          y páginas web para comercios y profesionales de la zona.
+        </p>
+        <div class="hero__cta">
+          <a class="btn btn--lg" href="https://wa.me/5493512700909?text=Hola!%20Los%20contacto%20por%20la%20p%C3%A1gina." target="_blank" rel="noopener">
+            <svg class="ic" aria-hidden="true"><use href="#i-whatsapp"/></svg>Escribinos por WhatsApp
+          </a>
+          <a class="btn btn--ghost btn--lg" href="#servicios">Ver qué hacemos</a>
+        </div>
+      </div>
+      <div class="hero__media reveal">
+        <img src="assets/villa-allende-cartel.jpg"
+             alt="El cartel de Villa Allende junto a las palmeras de la avenida de entrada"
+             width="1280" height="960" fetchpriority="high" decoding="async">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COBERTURA : banda de lugares ============ -->
+  <section class="cobertura">
+    <div class="wrap cobertura__inner">
+      <p class="cobertura__label">Trabajamos en toda la zona</p>
+      <ul class="cobertura__list">
+        <li>Villa Allende</li>
+        <li>Mendiolaza</li>
+        <li>Unquillo</li>
+        <li>Río Ceballos</li>
+        <li>Saldán</li>
+        <li>La Calera</li>
+        <li>Córdoba capital</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ SERVICIOS : bento de 3 celdas ============ -->
+  <section id="servicios" class="section">
+    <div class="wrap">
+      <h2 class="section__title reveal">Tres cosas que resolvemos bien</h2>
+
+      <div class="bento">
+        <article class="bento__cell bento__cell--wide reveal">
+          <div class="bento__body">
+            <svg class="ic bento__icon" aria-hidden="true"><use href="#i-package"/></svg>
+            <h3>Sistemas de stock y ventas</h3>
+            <p>
+              Saber qué te queda en depósito sin contar cajas a mano. Cargás la mercadería
+              una vez y el sistema te avisa cuándo se está por acabar, qué se vendió hoy
+              y qué producto no se mueve hace tres meses.
+            </p>
+          </div>
+          <div class="bento__media">
+            <!-- TODO: cuando tengan un sistema andando, reemplazar por una captura real -->
+            <img src="assets/villa-allende-esquina.jpg"
+                 alt="Esquina comercial de Villa Allende con locales a la calle"
+                 width="1280" height="960" loading="lazy" decoding="async">
+          </div>
+        </article>
+
+        <article class="bento__cell bento__cell--accent reveal">
+          <svg class="ic bento__icon" aria-hidden="true"><use href="#i-lightning"/></svg>
+          <h3>Automatizaciones</h3>
+          <p>
+            Eso que hacés a mano todos los días y te come la mañana. Pasar datos de una
+            planilla a otra, mandar recordatorios de turno, armar el resumen del mes.
+            Lo dejamos andando solo.
+          </p>
+        </article>
+
+        <article class="bento__cell reveal">
+          <svg class="ic bento__icon" aria-hidden="true"><use href="#i-globe"/></svg>
+          <h3>Páginas web</h3>
+          <p>
+            Una página que carga rápido, se ve bien en el celular y aparece en Google
+            cuando alguien de la zona busca lo que vos vendés.
+          </p>
+        </article>
+      </div>
+
+      <p class="section__note reveal">
+        ¿Necesitás otra cosa? Contanos qué problema tenés y te decimos con franqueza
+        si lo podemos resolver.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ PROCESO : lista escalonada ============ -->
+  <section id="proceso" class="section section--alt">
+    <div class="wrap proceso">
+      <div class="proceso__head reveal">
+        <h2>Cómo trabajamos</h2>
+        <p>Sin vueltas y sin compromiso hasta que vos digas que sí.</p>
+      </div>
+
+      <ol class="steps">
+        <li class="steps__item reveal">
+          <h3>Charlamos</h3>
+          <p>
+            Nos acercamos a tu local o hablamos por WhatsApp. Queremos entender cómo
+            trabajás hoy y qué es lo que te está costando tiempo o plata.
+          </p>
+        </li>
+        <li class="steps__item reveal">
+          <h3>Te pasamos una propuesta</h3>
+          <p>
+            Sin cargo. Qué se puede hacer, cuánto tarda y cuánto sale, escrito y claro.
+            Si no te cierra, quedamos como amigos.
+          </p>
+        </li>
+        <li class="steps__item reveal">
+          <h3>Lo construimos y te lo dejamos andando</h3>
+          <p>
+            Te vamos mostrando avances para que no haya sorpresas. Cuando está listo te
+            enseñamos a usarlo y quedamos disponibles para lo que salga después.
+          </p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ NOSOTROS : split con foto ============ -->
+  <section id="nosotros" class="section">
+    <div class="wrap nosotros">
+      <div class="nosotros__media reveal">
+        <!-- Tarjeta de marca, en lugar de la foto que todavia no hay. Cuando exista
+             la foto de los dos, reemplazar TODO el div .marca-card por:
+             <img src="assets/nosotros.jpg" alt="Valentino Castaldi y Agustín Rosas"
+                  width="1000" height="1200" loading="lazy" decoding="async">
+             Luz natural, los dos juntos, 1000x1200 aprox. El CSS de la imagen ya
+             esta listo en .nosotros__media img. -->
+        <div class="marca-card" aria-hidden="true">
+          <span class="marca-card__mono"><b>[</b>5105<b>]</b></span>
+          <span class="marca-card__lugar">
+            <svg class="ic" aria-hidden="true"><use href="#i-map-pin"/></svg>X5105 · Villa Allende, Córdoba
+          </span>
+        </div>
+      </div>
+      <div class="nosotros__copy reveal">
+        <h2>Somos de acá</h2>
+        <p class="lead-mark">
+          <strong>5105</strong> es el código postal de Villa Allende. Nos pusimos así
+          porque el nombre ya dice todo lo que hay que saber de nosotros.
+        </p>
+        <p>
+          Valentino Castaldi y Agustín Rosas, dos desarrolladores de Villa Allende.
+          Trabajamos con negocios de la zona por una razón simple: si algo se rompe,
+          no tenés que abrir un ticket ni esperar la respuesta de una agencia que está
+          en otra provincia. Nos escribís y vamos.
+        </p>
+        <p>
+          Todavía somos chicos, y eso juega a tu favor. Vas a hablar siempre con la
+          persona que escribe el código, no con un vendedor que después te deriva.
+        </p>
+        <ul class="marks">
+          <li><svg class="ic" aria-hidden="true"><use href="#i-map-pin"/></svg>Villa Allende y Sierras Chicas</li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg>Respondemos el mismo día</li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-handshake"/></svg>Presupuesto sin cargo</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONTACTO : banda centrada ============ -->
+  <section id="contacto" class="contacto">
+    <div class="wrap contacto__inner reveal">
+      <h2>Contanos qué necesitás</h2>
+      <p>
+        Escribinos y charlamos sin compromiso. Te respondemos el mismo día
+        y el presupuesto no tiene cargo.
+      </p>
+      <div class="contacto__cta">
+        <a class="btn btn--lg btn--onaccent" href="https://wa.me/5493512700909?text=Hola!%20Los%20contacto%20por%20la%20p%C3%A1gina." target="_blank" rel="noopener">
+          <svg class="ic" aria-hidden="true"><use href="#i-whatsapp"/></svg>351 270-0909
+        </a>
+        <!-- El boton muestra la direccion y no "Mandanos un mail": en una compu sin
+             app de correo configurada, mailto: no abre nada, y el visitante
+             tiene que poder copiarla igual. -->
+        <a class="btn btn--lg btn--onaccent-ghost" href="mailto:5105labs@gmail.com?subject=Consulta%20desde%20la%20web">
+          <svg class="ic" aria-hidden="true"><use href="#i-envelope"/></svg>5105labs@gmail.com
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <div>
+      <span class="logo__mark logo__mark--sm" aria-hidden="true"><b>[</b>5105<b>]</b></span>
+      <p class="footer__name">5105 Labs</p>
+      <p class="footer__meta">Desarrollo de software. Villa Allende, Córdoba.</p>
+    </div>
+    <div class="footer__links">
+      <a href="https://wa.me/5493512700909" target="_blank" rel="noopener">WhatsApp 351 270-0909</a>
+      <a href="mailto:5105labs@gmail.com">5105labs@gmail.com</a>
+    </div>
+  </div>
+  <!-- Atribución obligatoria por la licencia CC BY-SA 4.0 de las fotos.
+       Si se reemplazan por fotos propias, este bloque se borra. -->
+  <div class="wrap footer__credits">
+    <p>
+      Fotos de Villa Allende por Jmmuguerza,
+      <a href="https://commons.wikimedia.org/wiki/Category:Villa_Allende" target="_blank" rel="noopener">Wikimedia Commons</a>,
+      bajo licencia
+      <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank" rel="noopener">CC BY-SA 4.0</a>.
+    </p>
+  </div>
+</footer>
+
+<!-- Barra fija solo en celular: la pagina se muestra desde el telefono en visitas -->
+<div class="stickybar">
+  <a class="btn btn--lg" href="https://wa.me/5493512700909?text=Hola!%20Los%20contacto%20por%20la%20p%C3%A1gina." target="_blank" rel="noopener">
+    <svg class="ic" aria-hidden="true"><use href="#i-whatsapp"/></svg>Escribinos por WhatsApp
+  </a>
+</div>
+
+<script src="main.js" defer></script>
+</body>
+</html>
