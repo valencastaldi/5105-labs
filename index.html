@@ -44,6 +44,19 @@
      saca sola y la pagina se lee entera: sin esto, un main.js que no carga deja
      todas las secciones en opacity:0 para siempre. -->
 <script>
+/* Tema. Arranca como lo tenga el sistema del visitante y, si alguna vez toco
+   el boton sol/luna, gana lo que eligio. Se resuelve aca, antes de pintar,
+   para que la pagina no aparezca un instante en el tema equivocado. Sin JS el
+   CSS sigue al sistema por su cuenta (styles.css, seccion 1). */
+(function () {
+  var t = null;
+  try { t = localStorage.getItem("tema5105"); } catch (e) {}
+  if (t !== "light" && t !== "dark") {
+    t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  document.documentElement.setAttribute("data-theme", t);
+})();
+
 document.documentElement.classList.add("js");
 setTimeout(function () {
   if (!window.__cyrListo) document.documentElement.classList.remove("js", "intro");
@@ -132,8 +145,8 @@ setTimeout(function () {
   </div>
 </div>
 
-<!-- Los 9 iconos de la pagina, vendorizados de @phosphor-icons/core 2.1.1
-     (MIT). Son 4,8 KB en el HTML contra los 444 KB que costaba traer las dos
+<!-- Los 15 iconos de la pagina, vendorizados de @phosphor-icons/core 2.1.1
+     (MIT). Son 6,5 KB en el HTML contra los 444 KB que costaba traer las dos
      familias completas por CDN, y sacan a un tercero de la ruta critica: antes,
      si el CDN tardaba, la pagina no pintaba nada.
      Para agregar un icono nuevo: buscalo en phosphoricons.com, copiá el <path>
@@ -148,6 +161,12 @@ setTimeout(function () {
   <symbol id="i-chat" viewBox="0 0 256 256"><path d="M128,24A104,104,0,0,0,36.18,176.88L24.83,210.93a16,16,0,0,0,20.24,20.24l34.05-11.35A104,104,0,1,0,128,24Zm0,192a87.87,87.87,0,0,1-44.06-11.81,8,8,0,0,0-6.54-.67L40,216,52.47,178.6a8,8,0,0,0-.66-6.54A88,88,0,1,1,128,216Z"/></symbol>
   <symbol id="i-handshake" viewBox="0 0 256 256"><path d="M254.3,107.91,228.78,56.85a16,16,0,0,0-21.47-7.15L182.44,62.13,130.05,48.27a8.14,8.14,0,0,0-4.1,0L73.56,62.13,48.69,49.7a16,16,0,0,0-21.47,7.15L1.7,107.9a16,16,0,0,0,7.15,21.47l27,13.51,55.49,39.63a8.06,8.06,0,0,0,2.71,1.25l64,16a8,8,0,0,0,7.6-2.1l55.07-55.08,26.42-13.21a16,16,0,0,0,7.15-21.46Zm-54.89,33.37L165,113.72a8,8,0,0,0-10.68.61C136.51,132.27,116.66,130,104,122L147.24,80h31.81l27.21,54.41ZM41.53,64,62,74.22,36.43,125.27,16,115.06Zm116,119.13L99.42,168.61l-49.2-35.14,28-56L128,64.28l9.8,2.59-45,43.68-.08.09a16,16,0,0,0,2.72,24.81c20.56,13.13,45.37,11,64.91-5L188,152.66Zm62-57.87-25.52-51L214.47,64,240,115.06Zm-87.75,92.67a8,8,0,0,1-7.75,6.06,8.13,8.13,0,0,1-1.95-.24L80.41,213.33a7.89,7.89,0,0,1-2.71-1.25L51.35,193.26a8,8,0,0,1,9.3-13l25.11,17.94L126,208.24A8,8,0,0,1,131.82,217.94Z"/></symbol>
   <symbol id="i-envelope" viewBox="0 0 256 256"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 256 256"><path d="M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm72,88a64,64,0,1,1-64-64A64.07,64.07,0,0,1,192,128Zm-16,0a48,48,0,1,0-48,48A48.05,48.05,0,0,0,176,128ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM48,128a8,8,0,0,0-8-8H16a8,8,0,0,0,0,16H40A8,8,0,0,0,48,128Zm80,80a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 256 256"><path d="M233.54,142.23a8,8,0,0,0-8-2,88.08,88.08,0,0,1-109.8-109.8,8,8,0,0,0-10-10,104.84,104.84,0,0,0-52.91,37A104,104,0,0,0,136,224a103.09,103.09,0,0,0,62.52-20.88,104.84,104.84,0,0,0,37-52.91A8,8,0,0,0,233.54,142.23ZM188.9,190.34A88,88,0,0,1,65.66,67.11a89,89,0,0,1,31.4-26A106,106,0,0,0,96,56,104.11,104.11,0,0,0,200,160a106,106,0,0,0,14.92-1.06A89,89,0,0,1,188.9,190.34Z"/></symbol>
+  <symbol id="i-send" viewBox="0 0 256 256"><path d="M231.87,114l-168-95.89A16,16,0,0,0,40.92,37.34L71.55,128,40.92,218.67A16,16,0,0,0,56,240a16.15,16.15,0,0,0,7.93-2.1l167.92-96.05a16,16,0,0,0,.05-27.89ZM56,224a.56.56,0,0,0,0-.12L85.74,136H144a8,8,0,0,0,0-16H85.74L56.06,32.16A.46.46,0,0,0,56,32l168,95.83Z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 256 256"><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 256 256"><path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"/></symbol>
+  <symbol id="i-warning" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm-8-80V80a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,172Z"/></symbol>
 </svg>
 
 <a class="skip" href="#contenido">Ir al contenido</a>
@@ -164,10 +183,19 @@ setTimeout(function () {
       <a href="#servicios">Servicios</a>
       <a href="#proceso">Cómo trabajamos</a>
       <a href="#nosotros">Nosotros</a>
+      <a href="#preguntas">Preguntas</a>
     </nav>
-    <a class="btn btn--sm" href="https://wa.me/5493512700909?text=Hola!%20Los%20contacto%20por%20la%20p%C3%A1gina." target="_blank" rel="noopener">
-      <svg class="ic" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp
-    </a>
+    <div class="nav__acciones">
+      <!-- Sol/luna. Solo aparece con JS (es quien lo hace andar); la etiqueta
+           la reescribe main.js segun el tema que este puesto. -->
+      <button class="tema" type="button" aria-label="Cambiar el tema">
+        <svg class="ic tema__luna" aria-hidden="true"><use href="#i-moon"/></svg>
+        <svg class="ic tema__sol" aria-hidden="true"><use href="#i-sun"/></svg>
+      </button>
+      <a class="btn btn--sm" href="https://wa.me/5493512700909?text=Hola!%20Los%20contacto%20por%20la%20p%C3%A1gina." target="_blank" rel="noopener">
+        <svg class="ic" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp
+      </a>
+    </div>
   </div>
 </header>
 
@@ -229,12 +257,40 @@ setTimeout(function () {
               y qué producto no se mueve hace tres meses.
             </p>
           </div>
-          <div class="bento__media">
-            <!-- TODO: cuando tengan un sistema andando, reemplazar por una captura real -->
-            <img src="assets/villa-allende-esquina.jpg"
-                 alt="Esquina comercial de Villa Allende con locales a la calle"
-                 width="1280" height="960" loading="lazy" decoding="async">
-          </div>
+          <!-- Maqueta hecha en HTML, no una captura: muestra justo las tres cosas
+               que promete el texto de al lado (lo que se esta por acabar, lo que
+               se vendio hoy y lo que no se mueve hace tres meses). Los datos son
+               de ejemplo y lo dice el pie. Cuando tengan un sistema andando,
+               reemplazar el .app por una captura real; el marco ya la recorta. -->
+          <figure class="bento__media maqueta"
+                  aria-label="Maqueta de ejemplo de un sistema de stock: avisa que se está por acabar la yerba, muestra lo vendido en el día y marca un producto sin ventas hace tres meses">
+            <div class="app" aria-hidden="true">
+              <div class="app__top">
+                <span class="app__titulo">Stock</span>
+                <span class="app__hora">Hoy · 18:40</span>
+              </div>
+              <dl class="app__resumen">
+                <div><dt>Vendido hoy</dt><dd>$ 412.800</dd></div>
+                <div><dt>Ventas</dt><dd>37</dd></div>
+                <div><dt>Productos</dt><dd>214</dd></div>
+              </dl>
+              <div class="app__aviso">
+                <svg class="ic"><use href="#i-warning"/></svg>
+                <span>Se está por acabar la <b>Yerba 1 kg</b>: quedan 4.</span>
+              </div>
+              <table class="app__tabla">
+                <thead><tr><th>Producto</th><th>Stock</th><th>Estado</th></tr></thead>
+                <tbody>
+                  <tr><td>Yerba 1 kg</td><td>4</td><td><span class="estado estado--bajo">Por acabarse</span></td></tr>
+                  <tr><td>Lavandina 2 L</td><td>17</td><td><span class="estado estado--quieto">Sin venta · 3 meses</span></td></tr>
+                  <tr><td>Azúcar 1 kg</td><td>38</td><td><span class="estado">Bien</span></td></tr>
+                  <tr><td>Aceite 900 ml</td><td>21</td><td><span class="estado">Bien</span></td></tr>
+                  <tr><td>Fideos 500 g</td><td>56</td><td><span class="estado">Bien</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figcaption>Maqueta de ejemplo</figcaption>
+          </figure>
         </article>
 
         <article class="bento__cell bento__cell--accent reveal">
@@ -245,15 +301,34 @@ setTimeout(function () {
             planilla a otra, mandar recordatorios de turno, armar el resumen del mes.
             Lo dejamos andando solo.
           </p>
+          <!-- Un dia cualquiera con las tres tareas del texto ya hechas solas -->
+          <ul class="auto" aria-hidden="true">
+            <li><span class="auto__hora">08:00</span><span>Recordatorios de turno enviados</span><svg class="ic"><use href="#i-check"/></svg></li>
+            <li><span class="auto__hora">09:30</span><span>Ventas de ayer pasadas a la planilla</span><svg class="ic"><use href="#i-check"/></svg></li>
+            <li><span class="auto__hora">Día 1</span><span>Resumen del mes armado</span><svg class="ic"><use href="#i-check"/></svg></li>
+          </ul>
         </article>
 
-        <article class="bento__cell reveal">
+        <article class="bento__cell bento__cell--web reveal">
           <svg class="ic bento__icon" aria-hidden="true"><use href="#i-globe"/></svg>
           <h3>Páginas web</h3>
           <p>
             Una página que carga rápido, se ve bien en el celular y aparece en Google
             cuando alguien de la zona busca lo que vos vendés.
           </p>
+          <!-- Un resultado de busqueda generico: "Tu Negocio" es a proposito, para
+               no inventar un cliente. Sin logos de buscadores. -->
+          <div class="buscador" aria-hidden="true">
+            <div class="buscador__campo">
+              <svg class="ic"><use href="#i-search"/></svg>
+              <span>ferretería en villa allende</span>
+            </div>
+            <div class="buscador__res">
+              <span class="buscador__url">tunegocio.com.ar</span>
+              <span class="buscador__titulo">Ferretería en Villa Allende · Tu Negocio</span>
+              <span class="buscador__desc">Abierto hoy hasta las 20 h. Pedidos por WhatsApp y envíos en la zona.</span>
+            </div>
+          </div>
         </article>
       </div>
 
@@ -336,6 +411,82 @@ setTimeout(function () {
           <li><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg>Respondemos el mismo día</li>
           <li><svg class="ic" aria-hidden="true"><use href="#i-handshake"/></svg>Presupuesto sin cargo</li>
         </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PREGUNTAS : mini chat ============ -->
+  <section id="preguntas" class="section section--alt">
+    <div class="wrap faq">
+      <div class="faq__head reveal">
+        <h2>Preguntas frecuentes</h2>
+        <p>
+          Tocá una pregunta y te contestamos acá mismo. Si la tuya no está,
+          escribila en el chat y te llega directo a nuestro WhatsApp.
+        </p>
+      </div>
+
+      <div class="chat reveal">
+        <div class="chat__top">
+          <span class="logo__mark logo__mark--sm" aria-hidden="true"><b>[</b>5105<b>]</b></span>
+          <div>
+            <p class="chat__nombre">5105 Labs</p>
+            <p class="chat__estado">Valentino y Agustín · respondemos el mismo día</p>
+          </div>
+        </div>
+
+        <div class="chat__cuerpo" tabindex="-1">
+          <div class="chat__log" role="log" aria-label="Preguntas y respuestas">
+            <p class="chat__aviso">Las dudas que más nos hacen</p>
+            <p class="burbuja">¡Hola! Tocá la pregunta que quieras y te respondemos.</p>
+          </div>
+
+          <!-- Las respuestas viven aca: es lo que lee Google y lo que ve quien no
+               tiene JS. main.js las toma de esta lista, la esconde y arma los
+               botones del chat. Para sumar o cambiar una pregunta se edita SOLO
+               esto: el <summary> es el boton y el <p> la respuesta. -->
+          <div class="faq__lista">
+            <details>
+              <summary>¿Cuánto sale?</summary>
+              <p>Depende de lo que necesites, por eso no tenemos una lista de precios. Primero charlamos y después te pasamos un presupuesto por escrito y sin cargo: qué incluye, cuánto tarda y cuánto sale. Si no te cierra, no pasa nada.</p>
+            </details>
+            <details>
+              <summary>¿Cuánto tarda?</summary>
+              <p>Depende del tamaño del proyecto. En la propuesta te ponemos un plazo concreto, y mientras trabajamos te vamos mostrando avances para que no haya sorpresas.</p>
+            </details>
+            <details>
+              <summary>¿Lo voy a saber usar?</summary>
+              <p>Sí. Lo armamos pensando en quien lo usa todos los días, no en un programador. Cuando está listo te enseñamos a usarlo con tus productos y tu forma de trabajar.</p>
+            </details>
+            <details>
+              <summary>¿Sirve en el celular?</summary>
+              <p>Sí. Lo pensamos para que se use cómodo desde el celular, la tablet o la compu, según cómo trabajes vos.</p>
+            </details>
+            <details>
+              <summary>¿Y si algo se rompe?</summary>
+              <p>Nos escribís por WhatsApp y lo vemos. No tenés que abrir un ticket ni esperar a una agencia de otra provincia: somos de Villa Allende y, si hace falta, vamos al local.</p>
+            </details>
+            <details>
+              <summary>¿Trabajan en mi zona?</summary>
+              <p>Somos de Villa Allende y trabajamos en toda la zona: Mendiolaza, Unquillo, Río Ceballos, Saldán, La Calera y Córdoba capital.</p>
+            </details>
+          </div>
+        </div>
+
+        <!-- Del otro lado no hay nadie en vivo: lo que se escribe aca no se
+             responde en la pagina, abre WhatsApp con la pregunta. Funciona aun
+             sin JS (el form manda ?text= a wa.me); con JS le suma un saludo. -->
+        <form class="chat__form" action="https://wa.me/5493512700909" method="get" target="_blank">
+          <label class="sr-only" for="chat-texto">Tu pregunta</label>
+          <input id="chat-texto" name="text" type="text" placeholder="Escribí tu pregunta…"
+                 autocomplete="off" maxlength="500" required>
+          <button class="chat__enviar" type="submit" aria-label="Enviar por WhatsApp">
+            <svg class="ic" aria-hidden="true"><use href="#i-send"/></svg>
+          </button>
+        </form>
+        <p class="chat__nota">
+          <svg class="ic" aria-hidden="true"><use href="#i-whatsapp"/></svg>Lo que escribas se abre en WhatsApp
+        </p>
       </div>
     </div>
   </section>

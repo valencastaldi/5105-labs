@@ -1,4 +1,4 @@
-/* 5105 Labs - entrada de secciones al hacer scroll.
+/* 5105 Labs - entrada de secciones, nav, tema, mail y chat de preguntas.
    Unico script de la pagina. Sin dependencias.
 
    Regla: nada de trabajo pesado en listeners de scroll. Las entradas usan
@@ -252,5 +252,198 @@
       }, 900);
       // no se hace preventDefault: el mailto sigue su camino normal
     });
+  });
+})();
+
+/* Tema claro / oscuro.
+
+   El <head> ya dejo puesto data-theme antes de pintar: lo guardado o, si no
+   hay nada guardado, lo del sistema. Aca vive el boton sol/luna, y mientras el
+   visitante no haya elegido, la pagina sigue al sistema en vivo (el celu que
+   pasa solo a oscuro a la noche).
+
+   El cambio abre el tema nuevo como un circulo que crece desde el boton, con
+   View Transitions. Sin soporte o con movimiento reducido, cambia de una. */
+
+(function () {
+  "use strict";
+
+  var raiz = document.documentElement;
+  var boton = document.querySelector(".tema");
+  var sistema = window.matchMedia("(prefers-color-scheme: dark)");
+  var metas = document.querySelectorAll('meta[name="theme-color"]');
+  // los mismos colores de las <meta theme-color> del <head>
+  var BARRA = { light: "#ad5714", dark: "#0f1113" };
+  var CLAVE = "tema5105";
+
+  function elegido() {
+    try { return localStorage.getItem(CLAVE); } catch (e) { return null; }
+  }
+
+  function actual() {
+    return raiz.getAttribute("data-theme") === "dark" ? "dark" : "light";
+  }
+
+  function poner(t) {
+    raiz.setAttribute("data-theme", t);
+    // Las dos <meta> tienen media=: hay que pisar ambas, si no la del sistema
+    // le gana a la eleccion y la barra del navegador queda del otro color.
+    for (var i = 0; i < metas.length; i++) metas[i].setAttribute("content", BARRA[t]);
+    if (boton) {
+      var otro = t === "dark" ? "claro" : "oscuro";
+      boton.setAttribute("aria-label", "Pasar a modo " + otro);
+      boton.title = "Modo " + otro;
+    }
+  }
+
+  poner(actual());
+
+  function alCambiarSistema(e) {
+    if (!elegido()) poner(e.matches ? "dark" : "light");
+  }
+  if (sistema.addEventListener) sistema.addEventListener("change", alCambiarSistema);
+  else if (sistema.addListener) sistema.addListener(alCambiarSistema);   // Safari < 14
+
+  if (!boton) return;
+
+  boton.addEventListener("click", function () {
+    var nuevo = actual() === "dark" ? "light" : "dark";
+    try { localStorage.setItem(CLAVE, nuevo); } catch (e) {}
+
+    var quieto = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (quieto || !document.startViewTransition) { poner(nuevo); return; }
+
+    var r = boton.getBoundingClientRect();
+    var x = r.left + r.width / 2;
+    var y = r.top + r.height / 2;
+    var radio = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+
+    var vt = document.startViewTransition(function () { poner(nuevo); });
+    vt.ready.then(function () {
+      raiz.animate(
+        { clipPath: ["circle(0px at " + x + "px " + y + "px)",
+                     "circle(" + radio + "px at " + x + "px " + y + "px)"] },
+        { duration: 650, easing: "cubic-bezier(.16, 1, .3, 1)",
+          pseudoElement: "::view-transition-new(root)" }
+      );
+    }, function () {});
+  });
+})();
+
+/* Preguntas frecuentes como mini chat.
+
+   Las respuestas estan en el HTML, en los <details> de .faq__lista: eso es lo
+   que indexa Google y lo que ve quien no tiene JS. Aca se leen, se esconde la
+   lista y cada pregunta pasa a ser un boton. Al tocarlo aparece como mensaje
+   propio y enseguida la respuesta.
+
+   Del otro lado no hay nadie en vivo y el chat no lo finge: no hay
+   "escribiendo...", y lo que se escribe en el campo no se contesta aca, abre
+   WhatsApp con la pregunta. */
+
+(function () {
+  "use strict";
+
+  var chat = document.querySelector(".chat");
+  if (!chat) return;
+
+  var cuerpo = chat.querySelector(".chat__cuerpo");
+  var log = chat.querySelector(".chat__log");
+  var lista = chat.querySelector(".faq__lista");
+  var form = chat.querySelector(".chat__form");
+  var campo = form.querySelector("input");
+  var quieto = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var WA = "https://wa.me/5493512700909?text=";
+  var CIERRE = "Esas son las que más nos hacen. Si te quedó otra, escribila acá abajo y seguimos por WhatsApp.";
+  var ENVIADO = "Te abrimos WhatsApp con tu pregunta. Mandala desde ahí y te respondemos el mismo día.";
+
+  var sug = document.createElement("div");
+  sug.className = "chat__sug";
+  sug.setAttribute("role", "group");
+  sug.setAttribute("aria-label", "Preguntas frecuentes");
+
+  Array.prototype.forEach.call(lista.querySelectorAll("details"), function (d) {
+    var pregunta = d.querySelector("summary").textContent.trim();
+    var respuesta = d.querySelector("p").textContent.trim().replace(/\s+/g, " ");
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "chip";
+    b.textContent = pregunta;
+    b.addEventListener("click", function () { tocar(b, pregunta, respuesta); });
+    sug.appendChild(b);
+  });
+
+  lista.hidden = true;
+  cuerpo.appendChild(sug);
+  chat.classList.add("is-vivo");
+
+  // Pares [lo que dice el visitante, lo que contestamos], de a uno por vez:
+  // si toca tres preguntas seguidas, cada respuesta queda pegada a la suya.
+  var cola = [];
+  var ocupado = false;
+
+  function mensaje(texto, mia) {
+    var p = document.createElement("p");
+    p.className = "burbuja" + (mia ? " burbuja--mia" : "");
+    p.textContent = texto;
+    log.appendChild(p);
+    return p;
+  }
+
+  // Scrollea solo la caja del chat, nunca la pagina. No va al fondo: deja la
+  // pregunta recien hecha arriba de todo, asi la respuesta se lee entera aunque
+  // abajo queden varias preguntas por tocar (en celular ocupan medio chat).
+  function mostrar(desde) {
+    var max = cuerpo.scrollHeight - cuerpo.clientHeight;
+    cuerpo.scrollTo({ top: Math.min(max, desde.offsetTop - 14), behavior: quieto ? "auto" : "smooth" });
+  }
+
+  function tocar(boton, pregunta, respuesta) {
+    // Con teclado, el foco pasa a la pregunta vecina para poder seguir.
+    var tenia = document.activeElement === boton;
+    var vecino = boton.nextElementSibling || boton.previousElementSibling;
+    sug.removeChild(boton);
+    if (tenia) (vecino || cuerpo).focus({ preventScroll: true });
+
+    cola.push([pregunta, respuesta]);
+    if (!ocupado) seguir();
+  }
+
+  function seguir() {
+    var par = cola.shift();
+    if (!par) {
+      ocupado = false;
+      if (!sug.children.length && sug.parentNode) {
+        sug.parentNode.removeChild(sug);
+        mostrar(mensaje(CIERRE, false));
+      }
+      return;
+    }
+    ocupado = true;
+    var pregunta = mensaje(par[0], true);
+    mostrar(pregunta);
+
+    // la respuesta entra apenas termina de entrar la pregunta
+    setTimeout(function () {
+      mensaje(par[1], false);
+      mostrar(pregunta);
+      setTimeout(seguir, quieto ? 0 : 250);
+    }, quieto ? 0 : 380);
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var texto = campo.value.trim();
+    if (!texto) { campo.focus(); return; }
+
+    var url = WA + encodeURIComponent("Hola! Tengo una consulta: " + texto);
+    var w = window.open(url, "_blank");
+    if (w) w.opener = null;
+    else location.href = url;           // si el navegador bloqueo la pestana nueva
+
+    campo.value = "";
+    cola.push([texto, ENVIADO]);
+    if (!ocupado) seguir();
   });
 })();

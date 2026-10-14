@@ -12,11 +12,15 @@
      no invierte con el tema, para que el logo sea el mismo en los dos.
    - Radios: botones = pastilla (999px). Todo lo demas = --r (14px).
    - Tema: light y dark completos via variables. Ninguna seccion invierte.
+     Lo decide data-theme en <html> (lo pone el <head> antes de pintar); sin
+     JS no hay atributo y manda prefers-color-scheme.
    ========================================================================== */
 
 /* ---------- 1. Tokens ---------- */
 
 :root {
+  color-scheme: light;
+
   --bg:            #fbfbf9;
   --surface:       #ffffff;
   --surface-2:     #f3f4f0;
@@ -46,25 +50,59 @@
   --wrap: 1240px;
   --shadow: 0 1px 2px rgb(20 23 26 / .04), 0 12px 32px -12px rgb(20 23 26 / .10);
 
+  --burbuja: var(--surface-2);   /* globos de respuesta del chat */
+  --grain: .04;
+
   --ease: cubic-bezier(.16, 1, .3, 1);
 }
 
+/* Oscuro. Son dos bloques con los mismos valores y tienen que quedar iguales:
+   el primero es el que se usa (data-theme lo pone el <head>), el segundo solo
+   entra sin JS, cuando no hay atributo y la pagina sigue al sistema. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg:            #0f1113;
+  --surface:       #16191c;
+  --surface-2:     #1b1f22;
+  --ink:           #f1f3f1;
+  --ink-2:         #a9b1b6;
+  --ink-3:         #8a9297;   /* 6:1 sobre --bg, 5.2:1 sobre --surface-2. El #7d858a
+                                 de antes daba 4.4:1 sobre --surface-2 y rompia AA */
+  --line:          #262b2f;
+
+  --accent:        #e2792e;   /* el naranja de marca, tal cual. 6.3:1 sobre --bg */
+  --accent-strong: #ef8a45;
+  --accent-soft:   #2a1a0d;
+  --on-accent:     #14100a;
+
+  --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 12px 32px -12px rgb(0 0 0 / .55);
+
+  --burbuja: #22272b;
+  --grain: .055;
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+
     --bg:            #0f1113;
     --surface:       #16191c;
     --surface-2:     #1b1f22;
     --ink:           #f1f3f1;
     --ink-2:         #a9b1b6;
-    --ink-3:         #7d858a;
+    --ink-3:         #8a9297;
     --line:          #262b2f;
 
-    --accent:        #e2792e;   /* el naranja de marca, tal cual. 6.3:1 sobre --bg */
+    --accent:        #e2792e;
     --accent-strong: #ef8a45;
     --accent-soft:   #2a1a0d;
     --on-accent:     #14100a;
 
     --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 12px 32px -12px rgb(0 0 0 / .55);
+
+    --burbuja: #22272b;
+    --grain: .055;
   }
 }
 
@@ -77,7 +115,14 @@ html {
   scroll-behavior: smooth;
   /* la nav es sticky: sin esto los links del menu dejan el titulo debajo */
   scroll-padding-top: 88px;
+  /* lo que el navegador dibuja solo (barra de scroll, cursor, seleccion,
+     checks) tambien va con la paleta */
+  scrollbar-color: color-mix(in srgb, var(--ink) 26%, transparent) var(--bg);
+  accent-color: var(--accent);
+  caret-color: var(--accent);
 }
+
+::selection { background: color-mix(in srgb, var(--accent) 28%, transparent); }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -121,9 +166,22 @@ h1, h2, h3 {
   font-weight: 800;
   /* reserva para descendentes (g, j, y) en titulos grandes */
   padding-bottom: .06em;
+  /* reparte las lineas parejas: sin esto "Tres cosas que resolvemos bien"
+     dejaba "bien" solo en el segundo renglon */
+  text-wrap: balance;
 }
 
-p { margin: 0; }
+p { margin: 0; text-wrap: pretty; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
 
 a { color: inherit; }
 
@@ -334,6 +392,58 @@ a { color: inherit; }
     transition: color .18s var(--ease);
   }
   .nav__links a:hover { color: var(--ink); }
+}
+
+.nav__acciones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Boton de tema. Sin JS no hace nada, asi que tampoco se muestra. Los dos
+   iconos estan apilados y se cruzan girando: la luna en claro (lo que vas a
+   activar) y el sol en oscuro. */
+.tema { display: none; }
+
+.js .tema {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: var(--pill);
+  border: 1.5px solid var(--line);
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background .2s var(--ease), border-color .2s var(--ease), color .2s var(--ease);
+}
+
+.tema:hover {
+  background: var(--surface-2);
+  border-color: var(--ink-3);
+  color: var(--ink);
+}
+
+.tema .ic {
+  grid-area: 1 / 1;
+  width: 19px;
+  height: 19px;
+  transition: transform .5s var(--ease), opacity .3s var(--ease);
+}
+
+.tema__sol { opacity: 0; transform: rotate(-90deg) scale(.4); }
+
+[data-theme="dark"] .tema__luna { opacity: 0; transform: rotate(90deg) scale(.4); }
+[data-theme="dark"] .tema__sol  { opacity: 1; transform: none; }
+
+/* Cambio de tema: main.js abre el tema nuevo como un circulo que crece desde
+   el boton (View Transitions). Aca se apaga el fundido por defecto para que
+   quede solo el recorte. Donde no hay soporte, el cambio es instantaneo. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }
 
 /* ---------- 5. Hero (split asimetrico 6/5) ---------- */
@@ -554,6 +664,276 @@ a { color: inherit; }
   border-color: color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
+/* Las dos celdas chicas llevan su ejemplo al pie: en columna, con el ejemplo
+   empujado abajo, quedan alineadas aunque el texto de una sea mas largo. */
+.bento__cell--accent,
+.bento__cell--web {
+  display: flex;
+  flex-direction: column;
+}
+
+.bento__cell--accent > p,
+.bento__cell--web > p { margin-bottom: 26px; }
+
+/* ---------- 7b. Maquetas de los servicios ---------- */
+
+/* Sistema de stock. Una ventana de app que entra desde arriba a la izquierda
+   y se sale por la derecha y por abajo, como una captura recortada: lee como
+   imagen y no como una tarjeta dentro de otra. */
+.maqueta {
+  position: relative;
+  margin: 0;
+  min-height: 330px;
+  overflow: hidden;
+  background:
+    radial-gradient(70% 60% at 100% 0%, color-mix(in srgb, var(--accent) 11%, transparent), transparent 70%),
+    var(--surface-2);
+}
+
+@media (min-width: 900px) {
+  .maqueta {
+    min-height: 420px;
+    border-left: 1px solid var(--line);
+  }
+}
+
+/* el corte de abajo se funde con el fondo en vez de terminar seco */
+.maqueta::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 120px;
+  pointer-events: none;
+  /* tramo solido abajo para que el pie se lea limpio, sin filas detras */
+  background: linear-gradient(to top, var(--surface-2) 40%, transparent);
+}
+
+.maqueta figcaption {
+  position: absolute;
+  z-index: 1;
+  left: 20px;
+  bottom: 14px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.app {
+  position: absolute;
+  top: 24px;
+  left: 20px;
+  right: -24px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: 0 1px 2px rgb(20 23 26 / .05);
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 900px) {
+  .app { top: 44px; left: 44px; right: -32px; font-size: 13.5px; }
+  .maqueta figcaption { left: 44px; bottom: 18px; }
+}
+
+/* la hora va pegada al titulo y no contra el borde derecho: la ventana se sale
+   de la tarjeta por ese lado y la cortaria */
+.app__top {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.app__titulo {
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -.01em;
+}
+
+.app__hora {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink-3);
+}
+
+.app__resumen {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: start;
+  gap: 4px 28px;
+  margin: 0;
+  padding: 14px 18px 12px;
+}
+
+.app__resumen dt {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--ink-3);
+}
+
+.app__resumen dd {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+}
+
+.app__aviso {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 2px 14px 10px;
+  padding: 9px 12px;
+  border-radius: var(--r-sm);
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+.app__aviso .ic {
+  width: 17px;
+  height: 17px;
+  fill: var(--accent);
+}
+
+.app__aviso b { font-weight: 700; }
+
+.app__tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.app__tabla th {
+  padding: 8px 18px;
+  text-align: left;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink-3);
+  border-bottom: 1px solid var(--line);
+}
+
+.app__tabla td {
+  padding: 9px 18px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+/* la cantidad alineada a la derecha, como en cualquier planilla de stock */
+.app__tabla th:nth-child(2),
+.app__tabla td:nth-child(2) { text-align: right; }
+
+.app__tabla td:nth-child(2) { font-weight: 600; }
+
+@media (max-width: 599px) {
+  .app__tabla th, .app__tabla td { padding-inline: 12px; }
+  .app__resumen { gap: 4px 20px; padding-inline: 14px; }
+  .app__resumen dd { font-size: 15.5px; }
+}
+
+.estado {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: var(--pill);
+  font-size: 11.5px;
+  font-weight: 600;
+  background: var(--surface-2);
+  color: var(--ink-2);
+}
+
+.estado--bajo {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.estado--quieto {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+/* Automatizaciones: el registro de un dia con las tareas hechas solas.
+   Lineas separadas por un filete, no tarjetas: ya estan dentro de una. */
+.auto {
+  list-style: none;
+  margin: auto 0 0;
+  padding: 0;
+  font-size: 14.5px;
+  font-weight: 500;
+}
+
+.auto li {
+  display: grid;
+  grid-template-columns: 3.4rem 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding-block: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.auto__hora {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.auto .ic {
+  width: 18px;
+  height: 18px;
+  fill: var(--accent);
+}
+
+/* Paginas web: un resultado de busqueda generico */
+.buscador {
+  margin-top: auto;
+  font-size: 14px;
+}
+
+.buscador__campo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding-inline: 16px;
+  border-radius: var(--pill);
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgb(20 23 26 / .04);
+}
+
+.buscador__campo .ic {
+  width: 17px;
+  height: 17px;
+  fill: var(--ink-3);
+}
+
+.buscador__res {
+  display: grid;
+  gap: 2px;
+  margin-top: 14px;
+  padding-inline: 4px;
+}
+
+.buscador__url {
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+
+.buscador__titulo {
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .18em;
+  text-decoration-color: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.buscador__desc { color: var(--ink-2); }
+
 .bento__icon {
   width: 30px;
   height: 30px;
@@ -608,25 +988,36 @@ a { color: inherit; }
   padding: 0;
   display: grid;
   gap: 0;
+  counter-reset: paso;
 }
 
 .steps__item {
   position: relative;
-  padding: 0 0 34px 30px;
+  padding: 0 0 38px 36px;
   border-left: 2px solid var(--line);
+  counter-increment: paso;
 }
 
 .steps__item:last-child { padding-bottom: 0; border-left-color: transparent; }
 
+/* Aca el orden si importa (primero se charla, despues se presupuesta), asi
+   que el punto lleva el numero del paso. Centrado sobre la guia de 2px. */
 .steps__item::before {
-  content: "";
+  content: counter(paso);
   position: absolute;
-  left: -7px;
-  top: 6px;
-  width: 12px;
-  height: 12px;
+  left: -15px;
+  top: -2px;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
   border-radius: var(--pill);
   background: var(--accent);
+  color: var(--on-accent);
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 0 0 5px var(--surface-2);   /* corta la guia alrededor del numero */
 }
 
 .steps__item h3 {
@@ -863,12 +1254,8 @@ body::after {
   inset: 0;
   z-index: 100;
   pointer-events: none;
-  opacity: .04;
+  opacity: var(--grain);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-@media (prefers-color-scheme: dark) {
-  body::after { opacity: .055; }
 }
 
 /* ---------- 15. Cobertura ---------- */
@@ -992,12 +1379,14 @@ body::after {
 .footer__credits a { color: var(--ink-2); }
 
 /* La linea que explica el nombre. Sin esto "5105" es un numero cualquiera:
-   el sentido de la marca vive en esta frase, no en el logo. */
-.lead-mark {
+   el sentido de la marca vive en esta frase, no en el logo. Se destaca por
+   tamano y color de texto, no con una raya de color al costado. */
+.nosotros__copy .lead-mark {
   margin-bottom: 18px;
-  padding-left: 14px;
-  border-left: 2px solid var(--accent);
-  color: var(--ink-2);
+  font-size: 18.5px;
+  line-height: 1.55;
+  font-weight: 500;
+  color: var(--ink);
 }
 
 .lead-mark strong {
@@ -1270,3 +1659,267 @@ body::after {
   .intro:not(.intro-forzada) .intro-ol { display: none; }
   .intro:not(.intro-forzada) { overflow: auto; }
 }
+
+/* ---------- 20. Preguntas frecuentes: mini chat ---------- */
+
+/* Sin JS es un acordeon de <details> dentro del mismo marco. Con JS
+   (.is-vivo) el marco toma alto fijo, el cuerpo scrollea por dentro y las
+   preguntas pasan a ser botones al pie de la conversacion. */
+
+.faq {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 36px;
+}
+
+@media (min-width: 900px) {
+  .faq {
+    grid-template-columns: 5fr 6fr;
+    gap: 72px;
+    align-items: center;
+  }
+}
+
+.faq__head h2 {
+  font-size: clamp(1.75rem, 4.6vw, 2.65rem);
+}
+
+.faq__head p {
+  margin-top: 16px;
+  color: var(--ink-2);
+  max-width: 38ch;
+}
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: 0 1px 2px rgb(20 23 26 / .05);
+  overflow: hidden;
+}
+
+/* alto justo para que al abrir entren el saludo y todas las preguntas sin un
+   hueco grande arriba; despues la charla scrollea por dentro */
+.chat.is-vivo { height: 32rem; }
+
+@media (min-width: 900px) {
+  .chat.is-vivo { height: 31rem; }
+}
+
+.chat__top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.chat__nombre {
+  font-size: 15.5px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  line-height: 1.3;
+}
+
+.chat__estado {
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--ink-3);
+}
+
+.chat__cuerpo {
+  position: relative;               /* main.js mide offsetTop de los globos contra esta caja */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding: 20px 18px 18px;
+}
+
+/* lo programatico (main.js lo enfoca cuando se acaban las preguntas) no
+   necesita anillo: no es un control */
+.chat__cuerpo:focus { outline: none; }
+
+/* la conversacion se apoya abajo, como en cualquier chat. margin-top:auto en
+   vez de justify-content:flex-end, que deja lo de arriba fuera del scroll */
+.chat__log {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chat__aviso {
+  align-self: center;
+  margin-bottom: 8px;
+  padding: 3px 12px;
+  border-radius: var(--pill);
+  background: var(--surface-2);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink-3);
+}
+
+.burbuja {
+  align-self: flex-start;
+  max-width: min(88%, 46ch);
+  padding: 10px 14px;
+  border-radius: var(--r) var(--r) var(--r) 4px;
+  background: var(--burbuja);
+  font-size: 15.5px;
+  line-height: 1.5;
+  transform-origin: 0 100%;
+}
+
+.burbuja--mia {
+  align-self: flex-end;
+  border-radius: var(--r) var(--r) 4px var(--r);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 500;
+  transform-origin: 100% 100%;
+}
+
+/* una respuesta seguida de otra del mismo lado va pegada */
+.burbuja + .burbuja:not(.burbuja--mia),
+.burbuja--mia + .burbuja--mia { margin-top: -4px; }
+
+.chat.is-vivo .burbuja { animation: burbuja-entra .38s var(--ease) both; }
+
+@keyframes burbuja-entra {
+  from { opacity: 0; transform: translateY(10px) scale(.96); }
+}
+
+/* Preguntas para tocar: del lado del visitante, porque son lo que el diria */
+.chat__sug {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.chip {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: var(--pill);
+  border: 1.5px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .18s var(--ease), border-color .18s var(--ease), transform .12s var(--ease);
+}
+
+.chip:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.chip:active { transform: scale(.97); }
+
+/* en celular entran de a dos por renglon en vez de una */
+@media (max-width: 479px) {
+  .chip { padding: 0 13px; font-size: 14px; }
+  .chat__sug { gap: 6px; }
+}
+
+/* Composer */
+.chat__form {
+  display: flex;
+  gap: 8px;
+  padding: 12px 14px 8px;
+  border-top: 1px solid var(--line);
+}
+
+.chat__form input {
+  flex: 1;
+  min-width: 0;
+  height: 46px;
+  padding: 0 18px;
+  border-radius: var(--pill);
+  border: 1.5px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;                  /* menos de 16px y el iPhone hace zoom al tocar */
+  transition: border-color .18s var(--ease), box-shadow .18s var(--ease);
+}
+
+.chat__form input::placeholder { color: var(--ink-3); opacity: 1; }
+
+.chat__form input:hover { border-color: color-mix(in srgb, var(--ink) 22%, transparent); }
+
+.chat__form input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.chat__enviar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--pill);
+  background: var(--accent);
+  color: var(--on-accent);
+  cursor: pointer;
+  transition: background .2s var(--ease), opacity .2s var(--ease), transform .12s var(--ease);
+}
+
+.chat__enviar .ic { width: 20px; height: 20px; }
+.chat__enviar:hover { background: var(--accent-strong); }
+.chat__enviar:active { transform: scale(.94); }
+
+/* con el campo vacio el boton se apaga: no hay nada que mandar */
+.chat__form input:placeholder-shown + .chat__enviar { opacity: .4; }
+
+.chat__nota {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 14px 12px;
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+
+.chat__nota .ic { width: 14px; height: 14px; }
+
+/* Acordeon sin JS */
+.faq__lista { margin-top: 16px; }
+
+.faq__lista details { border-top: 1px solid var(--line); }
+
+.faq__lista summary {
+  padding: 13px 2px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.faq__lista summary::marker { color: var(--accent); }
+
+.faq__lista details p {
+  padding: 0 2px 14px;
+  font-size: 15.5px;
+  color: var(--ink-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat.is-vivo .burbuja { animation: none; }
+  .tema .ic, .chip, .chat__enviar { transition: none; }
+}
+
+/* links de los creditos: el subrayado no pega contra el texto */
+.footer__credits a { text-underline-offset: .2em; }
