@@ -37,7 +37,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<!-- El ?v= es obligatorio. Cloudflare y los navegadores guardan el CSS y el JS
+     4 horas: sin cambiar este numero, despues de un deploy llega el HTML nuevo
+     con el CSS viejo y la pagina se ve rota. Cada vez que se toca styles.css
+     o main.js, poner la fecha del dia aca y en el <script> del final (si es
+     el mismo dia, sumarle una letra: 20261014b). -->
+<link rel="stylesheet" href="styles.css?v=20261014">
 
 <!-- Habilita las animaciones de entrada antes de pintar, para que no se vea el
      salto. Si main.js no llega a marcar la bandera en 2 segundos, la clase se
@@ -546,6 +551,6 @@ setTimeout(function () {
   </a>
 </div>
 
-<script src="main.js" defer></script>
+<script src="main.js?v=20261014" defer></script>
 </body>
 </html>
